@@ -16,9 +16,9 @@ class Direction(enum.Enum):
 
 
 class Player:
-    def __init__(self):
-        self.x = 20
-        self.y = 20 
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y 
         self.length = 1
         self.speed = 1
         self.direction = Direction.UP
@@ -68,11 +68,11 @@ class Game:
     grid_height = 40
 
     def __init__(self):
-        self.player = Player()
+        self.player = Player(20, 20)
         self.pill = Pill(0, 0)
 
     def RestartGame(self):
-        self.player = Player()
+        self.player = Player(20, 20)
         self.pill = Pill(0, 0)
 
     def StartOnKeyPress(self):
