@@ -2,36 +2,40 @@ from snake import *
 
 game = Game()
 
-def test_playereatspill_returntrue():
+def test_IsPlayerEatsPill_playereatspill_returntrue():
     player = Player(1,1)
     pill = Pill(1, 1)
-    assert game.IsPlayerEatsPill(player, pill) == True
+    assert game.IsPlayerEatsPill(player, pill)
 
-def test_playerdoesnoteatspill_returnfalse():
+def test_IsPlayerEatsPill_playerdoesnoteatspill_returnfalse():
     player = Player(1,1)
     pill = Pill(0, 0)
-    assert game.IsPlayerEatsPill(player, pill) == False
+    assert not game.IsPlayerEatsPill(player, pill)
 
-def test_playercollideitself_returntrue():
+def test_IsPlayerDead_playercollideitself_returntrue():
     player = Player(2,1)
     player.body = [(2,1), (2,2), (3,2), (3,1), (2,1), (1,1)]
-    assert game.IsSelfCollide(player) == True
+    assert game.IsPlayerDead(player)
 
-def test_playerdoesnotcollideitself_returnfalse():
+def test_IsPlayerDead_playerdoesnotcollideitself_returnfalse():
     player = Player(4,1)
     player.body = [(4,1), (3,1), (2,1), (1,1)]
-    assert game.IsSelfCollide(player) == False
+    assert not game.IsPlayerDead(player)
 
-def test_playeroutofboundary_returntrue():
-    player = Player(game.grid_width, game.grid_height+1)
-    assert game.IsOutOfBoundary(player) == True
-    player = Player(game.grid_width+1, game.grid_height)
-    assert game.IsOutOfBoundary(player) == True
+def test_IsPlayerDead_playeroutofboundary_returntrue():
+    player = Player(-1, game.GRID_HEIGHT)
+    assert game.IsPlayerDead(player)
+    player = Player(game.GRID_WIDTH, -1)
+    assert game.IsPlayerDead(player)
+    player = Player(game.GRID_WIDTH, game.GRID_HEIGHT+1)
+    assert game.IsPlayerDead(player)
+    player = Player(game.GRID_WIDTH+1, game.GRID_HEIGHT)
+    assert game.IsPlayerDead(player)
 
-def test_playerwithinboundary_returnfalse():
-    player = Player(game.grid_width, game.grid_height)
-    assert game.IsOutOfBoundary(player) == True
-    player = Player(game.grid_width, game.grid_height-1)
-    assert game.IsOutOfBoundary(player) == True
-    player = Player(game.grid_width-1, game.grid_height)
-    assert game.IsOutOfBoundary(player) == True
+def test_IsPlayerDead_playerwithinboundary_returnfalse():
+    player = Player(game.GRID_WIDTH, game.GRID_HEIGHT)
+    assert game.IsPlayerDead(player)
+    player = Player(game.GRID_WIDTH, game.GRID_HEIGHT-1)
+    assert game.IsPlayerDead(player)
+    player = Player(game.GRID_WIDTH-1, game.GRID_HEIGHT)
+    assert game.IsPlayerDead(player)
