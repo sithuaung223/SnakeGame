@@ -63,6 +63,7 @@ class Game:
     def RestartGame(self):
         self.player = Player(20, 20)
         self.pill = Pill(0, 0)
+        self.prev_move = self.player.moveUp
 
     def ContinueOnKeyPress(self):
         pygame.event.clear()
@@ -72,26 +73,21 @@ class Game:
 
     def Run(self):
         self.CreateWindow()
-        self.SummonRandomPill()
-        self.DisplayPill()
-        prev_move = self.player.moveUp
+        self.DisplayPillAtRandomPos()
 
         self.ContinueOnKeyPress()
         while True:
-            prev_move = self.MovePlayerWithCapturedKey(prev_move, self.player.direction)
+            self.MovePlayerWithCapturedKey(self.player.direction)
             if self.IsPlayerEatsPill(self.player, self.pill):
                 self.UpdatePlayerScore()
-                self.SummonRandomPill()
-                self.DisplayPill()
+                self.DisplayPillAtRandomPos()
                 continue
             if self.IsPlayerDead(self.player):
                 self.ShowScore()
                 self.ContinueOnKeyPress()
                 break
-            tail = self.player.body.pop()
-
             # render next state
-            self.DisplayPlayer(self.player, tail)
+            self.DisplayPlayer()
 
             # clock 
             time.sleep(0.1)
@@ -118,7 +114,11 @@ class Game:
     def IsOutOfBoundary(self, player):
         return player.head_pos[0] >= self.GRID_WIDTH or player.head_pos[1] >= self.GRID_HEIGHT or player.head_pos[0] < 0 or player.head_pos[1] < 0
 
-    def SummonRandomPill(self):
+    def DisplayPillAtRandomPos(self):
+        self.SummonPillAtRandomPos()
+        self.DisplayPill()
+
+    def SummonPillAtRandomPos(self):
         self.pill = Pill(random.randrange(self.GRID_WIDTH), random.randrange(self.GRID_HEIGHT))
 
     def CreateWindow(self):
@@ -134,9 +134,10 @@ class Game:
     def GetPillFigure(self):
         return (self.pill.pos[0] * self.PILL_FRAME_SIZE, self.pill.pos[1] * self.PILL_FRAME_SIZE) 
 
-    def DisplayPlayer(self, player, tail):
+    def DisplayPlayer(self):
+        tail = self.player.body.pop()
         self.ErasePlayerOldTail(tail)
-        self.DisplayPlayerNewHead(player)
+        self.DisplayPlayerNewHead()
         pygame.display.update()
 
     def ErasePlayerOldTail(self, tail):
@@ -144,30 +145,29 @@ class Game:
         player_image.fill((255, 255, 255)) 
         self.window.blit(player_image, (tail[0] * 10, tail[1] * 10)) 
 
-    def DisplayPlayerNewHead(self, player):
+    def DisplayPlayerNewHead(self):
         player_image = pygame.Surface((self.PLAYER_FRAME_SIZE, self.PLAYER_FRAME_SIZE))
         player_image.fill((0, 0, 0))
-        for pos in player.body:
+        for pos in self.player.body:
             self.window.blit(player_image, (pos[0] * self.PLAYER_FRAME_SIZE, pos[1] * self.PLAYER_FRAME_SIZE))
 
-    def MovePlayerWithCapturedKey(self, prev_move, direction):
+    def MovePlayerWithCapturedKey(self, direction):
         pygame.event.pump()
         keys = pygame.key.get_pressed()
 
         if(keys[K_RIGHT] and direction is not Direction.LEFT):
-            prev_move = self.player.moveRight
+            self.prev_move = self.player.moveRight
         elif(keys[K_LEFT] and direction is not Direction.RIGHT):
-            prev_move = self.player.moveLeft
+            self.prev_move = self.player.moveLeft
         elif(keys[K_UP] and direction is not Direction.DOWN):
-            prev_move = self.player.moveUp
+            self.prev_move = self.player.moveUp
         elif(keys[K_DOWN] and direction is not Direction.UP):
-            prev_move = self.player.moveDown
+            self.prev_move = self.player.moveDown
         elif(keys[K_ESCAPE]):
             pygame.quit()
             sys.exit(0)
             #TODO: find another way to exit()
-        prev_move()
-        return prev_move
+        self.prev_move()
 
 if __name__ == "__main__":
     while(True):
