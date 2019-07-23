@@ -119,7 +119,7 @@ class Game:
 
     def IsSelfCollide(self, player):
         #print("Self Collide")
-        return (player.x, player.y) in list(player.body)[2:]
+        return (player.x, player.y) in list(player.body)[1:]
 
     def IsOutOfBoundary(self, player):
         #print("Out of Boundary!")
